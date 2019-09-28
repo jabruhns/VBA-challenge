@@ -1,0 +1,57 @@
+Sub StockData()
+
+Dim ws As Worksheet
+Dim i As Long, size As Long, number() As Long
+Dim tot_vol As LongLong, vol As LongLong
+Dim ticker As String
+Dim opn As Double, cls As Double, change As Double
+Dim WScount As Integer, SumTab As Integer, max As Integer
+Dim rg As Long
+
+For Each ws In ThisWorkbook.Worksheets()
+    ws.Activate
+
+rg = 2
+SumTab = 2
+size = Cells(Rows.Count, 1).End(xlUp).Row
+ReDim number(size)
+Range("J1").Value = "Ticker"
+Range("K1").Value = "Yearly Change"
+Range("L1").Value = "Percent Change"
+Range("M1").Value = "Total Stock Volume"
+Range("L2:L" & size).NumberFormat = "0.00%"
+
+For i = 2 To size
+    opn = Cells(i, 3).Value
+        If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+            vol = Cells(i, 7).Value
+            cls = Cells(i, 6).Value
+            ticker = Cells(i, 1).Value
+            tot_vol = tot_vol + vol
+            
+            change = (cls - opn) / opn
+            Range("J" & SumTab).Value = ticker
+            Range("K" & SumTab).Value = change
+            Range("L" & SumTab).Value = change
+            Range("M" & SumTab).Value = tot_vol
+            SumTab = SumTab + 1
+            tot_vol = 0
+        Else
+            vol = Cells(i, 7).Value
+            tot_vol = tot_vol + vol
+        End If
+    
+Next i
+
+For i = 2 To SumTab
+    If Range("K" & rg).Value < 0 Then
+        Range("K" & rg).Interior.ColorIndex = 3
+        Else
+        Range("K" & rg).Interior.ColorIndex = 4
+        
+    End If
+    rg = rg + 1
+Next i
+MsgBox (size)
+Next ws
+End Sub
